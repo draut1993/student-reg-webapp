@@ -20,7 +20,6 @@
 		<sonar.java.binaries>target/classes</sonar.java.binaries>
 		<sonar.exclusions>**/*.css</sonar.exclusions>
 	</properties>
-
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
