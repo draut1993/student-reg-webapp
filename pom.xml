@@ -29,7 +29,7 @@
 		<snapshotRepository>
 			<id>nexus</id>
 			<url>http://3.6.186.231:8081/repository/student-reg-webapp-snapshots/</url>
-		</snapshotRepository>
+		</repository>
     </distributionManagement>
 
 	<dependencies>
