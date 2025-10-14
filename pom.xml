@@ -28,7 +28,7 @@
 		<snapshotRepository>
 			<id>nexus</id>
 			<url>http://34.228.24.28:8081/repository/DevOps-Profile-snapshot/</url>
-		</repository>
+		</snapshotRepository>
     </distributionManagement>
 
 	<dependencies>
