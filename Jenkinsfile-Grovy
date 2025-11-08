@@ -1,6 +1,6 @@
 node {
     def mavenHome = tool name: 'Maven_build', type: 'maven'
-    def tomcatServer = 'ec2-user@54.87.155.119'
+    def tomcatServer = 'ec2-user@18.234.46.124'
     def buildStatus = "SUCCESS"
 
     try {
