@@ -6,9 +6,7 @@ node {
     def buildStatus = "SUCCESS"
 
     try {
-        stage("Clone the project") {
-            git branch: 'main', credentialsId: 'Jenkins-credentials', url: 'https://github.com/draut1993/student-reg-webapp.git'
-        }
+
 
         stage("Maven Build") {
             sh "${mavenHome}/bin/mvn clean package"
