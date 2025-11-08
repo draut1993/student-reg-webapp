@@ -1,5 +1,3 @@
-
-
 node {
     def mavenHome = tool name: 'Maven_build', type: 'maven'
     def tomcatServer = 'ec2-user@54.87.155.119'
