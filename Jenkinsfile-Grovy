@@ -5,6 +5,10 @@ node {
 
     try {
 
+         stage("Checkout Code") {
+            echo "Checking out source code from SCM..."
+            checkout scm
+        }
 
         stage("Maven Build") {
             sh "${mavenHome}/bin/mvn clean package"
