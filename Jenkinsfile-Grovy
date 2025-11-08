@@ -16,7 +16,7 @@ node {
 
         stage("Code Review") {
             withCredentials([string(credentialsId: 'sonarToken', variable: 'sonarSecretToken')]) {
-                sh "${mavenHome}/bin/mvn sonar:sonar -Dsonar.host.url=http://54.146.205.228:9000/ -Dsonar.token=${sonarSecretToken}"
+                sh "${mavenHome}/bin/mvn sonar:sonar -Dsonar.host.url=http://3.80.49.68:9000/ -Dsonar.token=${sonarSecretToken}"
             }
         }
 
