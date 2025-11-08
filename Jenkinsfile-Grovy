@@ -1,0 +1,66 @@
+
+
+node {
+    def mavenHome = tool name: 'Maven_build', type: 'maven'
+    def tomcatServer = 'ec2-user@54.87.155.119'
+    def buildStatus = "SUCCESS"
+
+    try {
+        stage("Clone the project") {
+            git branch: 'main', credentialsId: 'Jenkins-credentials', url: 'https://github.com/draut1993/student-reg-webapp.git'
+        }
+
+        stage("Maven Build") {
+            sh "${mavenHome}/bin/mvn clean package"
+        }
+
+        stage("Code Review") {
+            withCredentials([string(credentialsId: 'sonarToken', variable: 'sonarSecretToken')]) {
+                sh "${mavenHome}/bin/mvn sonar:sonar -Dsonar.host.url=http://54.146.205.228:9000/ -Dsonar.token=${sonarSecretToken}"
+            }
+        }
+
+        stage("Upload Artifact to Nexus") {
+            sh "${mavenHome}/bin/mvn clean deploy"
+        }
+
+        stage("Deploy app to Tomcat") {
+            sshagent(['Tomcat_server_SSH_Agent']) {
+                sh """
+                    echo "Stopping Tomcat server..."
+                    ssh -o StrictHostKeyChecking=no ${tomcatServer} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/shutdown.sh'
+                    sleep 20
+                    echo "Removing old WAR file..."
+                    ssh -o StrictHostKeyChecking=no ${tomcatServer} 'sudo rm -f /home/ec2-user/apache-tomcat-9.0.110/webapps/student-reg-webapp.war'
+                    echo "Deploying new WAR file..."
+                    scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${tomcatServer}:/home/ec2-user/apache-tomcat-9.0.110/webapps/
+                    echo "Starting Tomcat server..."
+                    ssh -o StrictHostKeyChecking=no ${tomcatServer} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/startup.sh'
+                    echo "Deployment completed successfully!"
+                """
+            }
+        }
+    }
+    catch (err) {
+        buildStatus = "FAILURE"
+        echo "Build failed due to error: ${err}"
+    }
+    finally {
+        stage("Send Email Notification") {
+            echo "Sending email notification..."
+            emailext(
+                to: 'draut3078@gmail.com',
+                subject: "Jenkins Pipeline: ${buildStatus} - Student WebApp",
+                body: """
+                <h3>Jenkins Pipeline Execution Summary</h3>
+                <p><b>Project:</b> Student Registration WebApp</p>
+                <p><b>Status:</b> ${buildStatus}</p>
+                <p><b>Triggered By:</b> ${env.BUILD_USER}</p>
+                <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html'
+            )
+        }
+        echo "Pipeline execution completed with status: ${buildStatus}"
+    }
+}
