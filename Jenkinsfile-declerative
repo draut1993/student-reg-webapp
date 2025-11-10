@@ -113,7 +113,7 @@ Jenkins CI/CD Pipeline
         }
 
         always {
-            echo "📦 Build completed (Success/Fail/Unstable)"
+            echo " 📦 Build completed (Success/Fail/Unstable)"
         }
     }
 }
