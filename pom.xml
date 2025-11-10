@@ -22,11 +22,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://54.234.171.160:8081/repository/Scripted-pipeline-Release/</url>
+			<url>http://107.20.25.188:8081/repository/Scripted-pipeline-Release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://54.234.171.160:8081/repository/ScriptedPipeline-snapshot/</url>
+			<url>http://107.20.25.188:8081/repository/ScriptedPipeline-snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
