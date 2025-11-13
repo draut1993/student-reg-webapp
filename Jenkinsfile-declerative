@@ -1,1 +1,161 @@
 
+pipeline{
+    agent any
+    environment{
+        SONAR_TOKEN = credentials('sonarToken')
+        TOMCAT_SERVER = 'ec2-user@3.90.18.0'
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))      // Keep last 5 builds only
+        disableConcurrentBuilds()                          // Prevent parallel runs of same job
+        timeout(time: 15, unit: 'MINUTES')                 // Stop pipeline if exceeds 15 mins
+    }
+    triggers {
+        githubPush()    // Automatically triggers pipeline on GitHub push
+    }
+    tools{
+        maven 'Maven_build'
+    }
+    stages{
+        stage("Git clone"){
+            steps{
+              git branch: 'main', changelog: false, credentialsId: 'Jenkins-credentials', poll: false, url: 'https://github.com/draut1993/student-reg-webapp.git'  
+            }
+        }
+        
+        stage("Maven build"){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+        
+        stage("Sonar check"){
+            steps{
+                sh "mvn sonar:sonar -Dsonar.host.url=http://54.236.211.88:9000/ -Dsonar.token=${SONAR_TOKEN}"
+            }
+        }
+        
+        stage("Upload build artifact to nexus"){
+            steps{
+                sh "mvn clean deploy"
+            }
+        }
+        
+        stage("deploy app to main tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "main" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh """
+                ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/shutdown.sh'
+                sleep 20
+                ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER} 'sudo rm -f /home/ec2-user/apache-tomcat-9.0.110/webapps/student-reg-webapp.war || true'
+                scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_SERVER}:/home/ec2-user/apache-tomcat-9.0.110/webapps/
+                ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/startup.sh'
+                """
+   
+}
+            }
+        }
+
+            stage("deploy app to development tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "development" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh 'echo Deploying application to Dev ENV' 
+   
+}
+            }
+        }
+
+        stage("deploy app to QA tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "QA" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh 'echo Deploying application to QA ENV' 
+   
+}
+            }
+        }
+
+        stage("deploy app to feature tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "feature-login" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh 'echo Deploying application to feature ENV' 
+   
+}
+            }
+        }
+
+    }
+     post {
+
+        success {
+            echo "✅ Build Successful!"
+            mail to: 'draut3078@gmail.com',
+                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """\
+Hello Deepak,
+
+🎉 Good news! Your Jenkins build *${env.JOB_NAME}* (Build #${env.BUILD_NUMBER}) completed **successfully**.
+
+📂 Job URL: ${env.BUILD_URL}
+
+✅ Status: SUCCESS  
+🕒 Duration: ${currentBuild.durationString}
+
+Regards,  
+Jenkins CI/CD Pipeline  
+"""
+        }
+
+        failure {
+            echo "❌ Build Failed!"
+            mail to: 'draut3078@gmail.com',
+                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """\
+Hello Deepak,
+
+🚨 Your Jenkins job *${env.JOB_NAME}* (Build #${env.BUILD_NUMBER}) **failed**.
+
+📂 Job URL: ${env.BUILD_URL}
+
+❗ Please review the console output and fix the issue.
+
+Regards,  
+Jenkins CI/CD Pipeline  
+"""
+        }
+
+        unstable {
+            echo "⚠️ Build Unstable!"
+            mail to: 'draut3078@gmail.com',
+                subject: "⚠️ UNSTABLE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """\
+Hello Deepak,
+
+⚠️ Your Jenkins job *${env.JOB_NAME}* (Build #${env.BUILD_NUMBER}) is **unstable** (tests or quality checks failed).
+
+📂 Job URL: ${env.BUILD_URL}
+
+Please investigate.
+
+Regards,  
+Jenkins CI/CD Pipeline  
+"""
+        }
+
+        always {
+            echo " 📦 Build completed (Success/Fail/Unstable)"
+        }
+    }
+}
+
