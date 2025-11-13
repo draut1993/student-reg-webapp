@@ -40,7 +40,10 @@ pipeline{
             }
         }
         
-        stage("deploy app to tomcat server"){
+        stage("deploy app to main tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "main" }
+            }
             steps{
                 sshagent(['Tomcat_server_SSH_Agent']) {
                 sh """
@@ -54,6 +57,43 @@ pipeline{
 }
             }
         }
+
+            stage("deploy app to development tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "development" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh echo "Deploying application to Dev ENV" 
+   
+}
+            }
+        }
+
+        stage("deploy app to QA tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "QA" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh echo "Deploying application to QA ENV" 
+   
+}
+            }
+        }
+
+        stage("deploy app to feature tomcat server"){
+            when{
+                expression { env.BRANCH_NAME ==  "feature-login" }
+            }
+            steps{
+                sshagent(['Tomcat_server_SSH_Agent']) {
+                sh echo "Deploying application to feature ENV" 
+   
+}
+            }
+        }
+
     }
      post {
 
