@@ -2,7 +2,7 @@ pipeline{
     agent any
     environment{
         SONAR_TOKEN = credentials('sonarToken')
-        TOMCAT_SERVER = 'ec2-user@54.226.53.118'
+        TOMCAT_SERVER = 'ec2-user@3.90.18.0'
     }
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))      // Keep last 5 builds only
@@ -30,7 +30,7 @@ pipeline{
         
         stage("Sonar check"){
             steps{
-                sh "mvn sonar:sonar -Dsonar.host.url=http://50.16.165.60:9000/ -Dsonar.token=${SONAR_TOKEN}"
+                sh "mvn sonar:sonar -Dsonar.host.url=http://54.236.211.88:9000/ -Dsonar.token=${SONAR_TOKEN}"
             }
         }
         
