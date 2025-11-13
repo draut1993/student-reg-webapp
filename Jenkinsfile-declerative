@@ -64,7 +64,7 @@ pipeline{
             }
             steps{
                 sshagent(['Tomcat_server_SSH_Agent']) {
-                sh echo "Deploying application to Dev ENV" 
+                sh 'echo Deploying application to Dev ENV' 
    
 }
             }
@@ -76,7 +76,7 @@ pipeline{
             }
             steps{
                 sshagent(['Tomcat_server_SSH_Agent']) {
-                sh echo "Deploying application to QA ENV" 
+                sh 'echo Deploying application to QA ENV' 
    
 }
             }
@@ -88,7 +88,7 @@ pipeline{
             }
             steps{
                 sshagent(['Tomcat_server_SSH_Agent']) {
-                sh echo "Deploying application to feature ENV" 
+                sh 'echo Deploying application to feature ENV' 
    
 }
             }
