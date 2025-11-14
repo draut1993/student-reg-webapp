@@ -33,7 +33,7 @@ pipeline {
        
       stage("Sonar Scan"){
            steps {
-            sh "mvn sonar:sonar -Dsonar.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_QUBE_TOKEN}"
+            sh "mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_QUBE_TOKEN}"
           }
       }
       
