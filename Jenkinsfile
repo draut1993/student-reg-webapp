@@ -47,7 +47,7 @@ pipeline {
     
         steps{
     
-            sshagent(['Tomcat_Server']) {
+            sshagent(['Tomcat_server_SSH_Agent']) {
                 sh """
                      ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/shutdown.sh'
                      echo Stoping the Tomcat Process
