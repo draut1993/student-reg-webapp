@@ -44,6 +44,11 @@ pipeline {
               sh "mvn clean deploy"
           }
       }
+
+      stage("Run downstreamJob"){
+        steps{}
+        build job: '14-11-2025-DownStreamJob' 
+      }
       
        stage("Deployt To Dev Server") {
     
