@@ -68,7 +68,7 @@ pipeline {
    
    post {
         always {
-            EmailNotification(currentBuild.currentStatus, EMAIL)
+            EmailNotification(currentBuild.currentResult, EMAIL)
         }
     }
 }
