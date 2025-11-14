@@ -52,7 +52,7 @@ pipeline {
                      ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/shutdown.sh'
                      echo Stoping the Tomcat Process
                      sleep 30
-                     scp -o  StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${TOMCAT_SERVER_IP}:/opt/tomcat/webapps/student-reg-webapp.war
+                     scp -o  StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${TOMCAT_SERVER_IP}:/home/ec2-user/apache-tomcat-9.0.110/webapps/student-reg-webapp.war
                      echo Copying the War file to Tomcat Server
                      ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/startup.sh'
                      echo Strating the Tomcat process
