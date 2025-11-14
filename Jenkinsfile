@@ -49,7 +49,7 @@ pipeline {
         steps{
         build job: '14-11-2025-DownStreamJob' 
       }
-      
+      } 
        stage("Deployt To Dev Server") {
     
         steps{
