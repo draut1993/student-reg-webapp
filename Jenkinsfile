@@ -13,13 +13,13 @@ pipeline {
     }
     
     environment {
-        SONARQUBE_URL = "http://13.57.206.25:9000"
-        SONAR_QUBE_TOKEN = credentials('SonarToken')
-        TOMCAT_SERVER_IP = "172.31.21.97"
+        SONARQUBE_URL = "http://98.93.190.195:9000/"
+        SONAR_QUBE_TOKEN = credentials('sonarToken')
+        TOMCAT_SERVER_IP = "98.84.142.255"
     }
     
     tools {
-        maven 'Maven-3.9.10'
+        maven 'Maven_build'
     }
 
     stages {
@@ -44,21 +44,17 @@ pipeline {
       }
       
        stage("Deployt To Dev Server") {
-        when {
-            expression {
-                return env.BRANCH_NAME == 'development'
-            }
-        }
+    
         steps{
     
             sshagent(['Tomcat_Server']) {
                 sh """
-                     ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} sudo systemctl stop tomcat
+                     ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/shutdown.sh'
                      echo Stoping the Tomcat Process
                      sleep 30
                      scp -o  StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${TOMCAT_SERVER_IP}:/opt/tomcat/webapps/student-reg-webapp.war
                      echo Copying the War file to Tomcat Server
-                     ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} sudo systemctl start tomcat
+                     ssh -o  StrictHostKeyChecking=no ec2-user@${TOMCAT_SERVER_IP} 'sudo /home/ec2-user/apache-tomcat-9.0.110/bin/startup.sh'
                      echo Strating the Tomcat process
                    """
             }
@@ -73,18 +69,17 @@ pipeline {
             cleanWs()
         }
         success {
-        slackSend (channel: 'lic-appteam', color: "good", message: "Build - SUCCESS : ${env.JOB_NAME} #${env.BUILD_NUMBER} - URL: ${env.BUILD_URL}")
+    
           sendEmail(
            "${env.JOB_NAME} - ${env.BUILD_NUMBER} - Build SUCCESS",
            "Build SUCCESS. Please check the console output at ${env.BUILD_URL}",
-           'balajireddy.urs@gmail.com' )
+           'draut3078@gmail.com' )
         }
         failure {
-         slackSend (channel: 'lic-appteam', color: "danger", message: "Build - FAILED : ${env.JOB_NAME} #${env.BUILD_NUMBER} - URL: ${env.BUILD_URL}")    
          sendEmail(
            "${env.JOB_NAME} - ${env.BUILD_NUMBER} - Build FAILED",
            "Build FAILED. Please check the console output at ${env.BUILD_URL}",
-           'balajireddy.urs@gmail.com' )
+           'draut3078@gmail.com' )
         }
     }
 }

@@ -22,11 +22,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://52.91.22.58:8081/repository/DevOps-Profile-release/</url>
+			<url>http://34.224.215.227:8081/repository/DevOps-Profile-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://52.91.22.58:8081/repository/DevOps-Profile-snapshot/</url>
+			<url>http://34.224.215.227:8081/repository/DevOps-Profile-snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
