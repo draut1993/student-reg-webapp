@@ -13,6 +13,6 @@ spec:
         path: "/"
         backend:
           service:
-            name: sutdent-reg-webapp-svc
+            name: student-reg-webapp-svc
             port: 
               number: 80
